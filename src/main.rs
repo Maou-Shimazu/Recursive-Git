@@ -1,37 +1,31 @@
 use std::fs;
 use std::process::Command;
 use colored::Colorize;
+use std::path::Path;
 
 fn main() -> std::io::Result<()> {
-    let mut dir = std::env::current_dir()?;
-    println!("{}: {}", "Current directory".cyan(), dir.display());
-    let paths = fs::read_dir(dir.clone()).unwrap();
-    let mut vec: Vec<String> = Vec::new();
-
-    for path in paths {
-        vec.push(path.unwrap().path().to_str().unwrap().to_owned());
-    }
-    dir.push(".git");
-    let _git = std::fs::metadata(dir)?;
-    for i in vec {
-        if i.as_str().contains("\\") && !(i.as_str().contains(".")) {
-                std::env::set_current_dir(i.clone()).ok();
-
-            if _git.is_dir() {
-            println!("{}", "Github Directory Detected.".green());
-            println!("{} {}", "Pulling".green(), i);
-
+    let base_path = Path::new(".");
+    for entry in fs::read_dir(base_path)? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_dir() {
+            std::env::set_current_dir(path.clone()).ok();
+            let cwd = std::env::current_dir()?;
+            if Path::new(".git/").exists() {
+                println!("\n{}", "Github Directory Detected.".green());
+                println!("{}: {}\n", "Pulling Directory".cyan(), cwd.display());
+                
                 #[cfg(windows)]
                 Command::new("powershell").args(["/c", "git pull"]).output().expect("Failed to git pull");
 
                 #[cfg(unix)]
-                Command::new("sh").args(["-c", "git pull"]).output().expect("Failed to git pull");
+                Command::new("sh").args(["-c", "git pull"]).output().expect("Failed to git pull");                
             }
-
-                //format!("cd {}", i).as_str()).output();
+            else {
+                println!("{1} {}", "is not a github directory.".red(), cwd.display());
+            }
+            std::env::set_current_dir("../").ok();
         }
-        else { println!("{}: {}", "Private folder or File".yellow(), i); }
-
     }
     Ok(())
  }

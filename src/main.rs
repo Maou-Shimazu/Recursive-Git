@@ -43,17 +43,17 @@ fn main() -> std::io::Result<()> {
                         let cwd = std::env::current_dir()?;
                         if Path::new(".git/").exists() {
                             println!("\n{}", "Github Directory Detected.".green());
-                            println!("{}: {}\n", "Pulling Directory".cyan(), cwd.display());
+                            println!("{}: {}\n", "Committing and pushing Directory".cyan(), cwd.display());
 
                             #[cfg(windows)]
                             Command::new("powershell")
-                                .args(["/c", "git commit -a -m \"Auto Committed by Recursive Git.\""])
+                                .args(["/c", "git commit -a -m \"Auto Committed by Recursive Git.\"; git push"])
                                 .output()
                                 .expect("Failed to git pull");
 
                             #[cfg(unix)]
                             Command::new("sh")
-                                .args(["-c", "git commit -a -m \"Auto Committed by Recursive Git.\""])
+                                .args(["-c", "git commit -a -m \"Auto Committed by Recursive Git.\" && git push"])
                                 .output()
                                 .expect("Failed to git pull");
                         } else {

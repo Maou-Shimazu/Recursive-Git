@@ -47,13 +47,13 @@ fn main() -> std::io::Result<()> {
 
                             #[cfg(windows)]
                             Command::new("powershell")
-                                .args(["/c", "git pull"])
+                                .args(["/c", "git commit -a -m \"Auto Committed by Recursive Git.\""])
                                 .output()
                                 .expect("Failed to git pull");
 
                             #[cfg(unix)]
                             Command::new("sh")
-                                .args(["-c", "git pull"])
+                                .args(["-c", "git commit -a -m \"Auto Committed by Recursive Git.\""])
                                 .output()
                                 .expect("Failed to git pull");
                         } else {
@@ -61,7 +61,7 @@ fn main() -> std::io::Result<()> {
                         }
                         std::env::set_current_dir("../").ok();
                     }
-                    _ => println!("Please use arguments `push` or `pull`."),
+                    _ => (),
                 }
             }
         } //todo: check if user has wifi
